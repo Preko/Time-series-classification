@@ -1,4 +1,4 @@
-function [error_rate, correct, rowt]=TSValidate(trn,tst,wmethod,wparam1,measure,k)
+function [error_rate, avgdist]=TSValidate(trn,tst,wmethod,wparam1,measure,k)
 
 %%%%%%%%%%%%%%%%%%%%%
 %%% PREPROCESSING %%%
@@ -64,7 +64,11 @@ switch lower(wmethod)
     %    cls_wghts=relieff(TRAIN(:,2:lenn),TRAIN(:,1),wparam1,wparam2);
         
     case {'mahalanobis'}
+        %cls_wghts=ishikawa(TRAIN,Inf,wparam1);
         cls_wghts=ishikawa(TRAIN,wparam1);
+        
+    case {'pairinverse'}
+        cls_wghts=pairinverse(TRAIN);
         
     case {'gmahalanobis'}
         TRAIN_2 = TRAIN;
@@ -75,13 +79,36 @@ switch lower(wmethod)
             cls_wghts(i,:,:) = global_wght;
         end
         
+    case {'manual'}
+        cls_wghts=manual_wghts();
+        
     %case {'interclass'}
     %    cls_wghts=interclassw(TRAIN);
+    
+    case {'halfsparse','halfsparsemah'}
+        if (mod(lenn-1,2) == 1)
+            TRAIN = [TRAIN zeros(rown,1)];
+            TEST = [TEST zeros(rowt,1)];
+        end;
+        
+        TRAIN = [TRAIN(:,1) TRAIN(:,2:2:end)+TRAIN(:,3:2:end)];
+        TEST = [TEST(:,1) TEST(:,2:2:end)+TEST(:,3:2:end)];
+        
+        [rowt,lent]=size(TEST);
+        [rown,lenn]=size(TRAIN);
+        if (strcmp(wmethod,'halfsparsemah'))
+            cls_wghts=ishikawa(TRAIN,wparam1);
+        else
+            cls_wghts=zeros(clsnro,lenn-1,lenn-1);
+            for i = 1 : clsnro
+                cls_wghts(i,:,:) = eye(lenn-1);
+            end    
+        end
         
     otherwise
         disp('Unknown weighting method!');
         return;
-
+ 
 end
 
 %%%%%%%%%%%%%%%%%%%%%%
@@ -125,5 +152,11 @@ for i = 1 : rowt
         correct = correct + 1;
     end
 end
-error_rate=(rowt-correct)/rowt
+error_rate=(rowt-correct)/rowt;
 testmx
+for c=1:clsnro
+    trndistmx = minkowski_matrix(TRAIN(TRAIN(:,1)==c-1,2:lenn),TRAIN(TRAIN(:,1)==c-1,2:lenn),TRAIN(TRAIN(:,1)==c-1,1),cls_wghts,2);
+    avgdist(c,1) = mean(mean(trndistmx));
+end
+avgdist
+

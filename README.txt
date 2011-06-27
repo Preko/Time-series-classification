@@ -15,6 +15,7 @@ looper(data,'mahalanobis',0,'euc',1)
 The results in Table 2 can be reproduced by the following commands column by column:
 looper(data,'ones',0,'euc',1)
 looper(data,'ones',0,'dtw',1)
+looper(data,'mahalanobis',Inf,'euc',1)
 looper(data,'mahalanobis',0,'euc',1)
 looper_lmnn2(data(2:20),'global',1)
 looper_lmnn2(data(2:20),'local',1)

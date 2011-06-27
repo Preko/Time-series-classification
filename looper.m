@@ -39,12 +39,30 @@ nlen=length(names);
 plen=length(wparams);
 
 results = zeros(nlen,plen);
+alldist = [];
+
+global eigenL;
+%global eigenD;
+%global eigenDF;
+
+eigenL = [];
 
 for i=1:nlen
     for j=1:plen
         disp(['Testing name #',num2str(i),' out of ',num2str(nlen),', param #',num2str(j),' out of ',num2str(plen),'.'])
         TRAIN=load(char(strcat('dataset/',names(i), '/', names(i),'_TRAIN')));
         TEST=load(char(strcat('dataset/',names(i), '/', names(i),'_TEST')));
-        results(i,j)=TSValidate(TRAIN,TEST,wmethod,wparams(j),measure,k);
+        %cov(TRAIN(:,2:size(TRAIN,2)))
+        [results(i,j),avgdist]=TSValidate(TRAIN,TEST,wmethod,wparams(j),measure,k);
+        alldist = [alldist; avgdist];
     end
 end
+
+eigenL
+%eigenD
+%eigenDF
+
+%dlmwrite('eigens.txt',[eigenL eigenD eigenDF]);
+dlmwrite('dets.txt',eigenL);
+
+alldist
