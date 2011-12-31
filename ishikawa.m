@@ -2,7 +2,7 @@ function cls_wghts = ishikawa(trn,band,lambda)
 
 %global eigenD;
 %global eigenDF;
-global eigenL;
+%global eigenL;
 
 [row,len]=size(trn);
 trn_labels = trn(:,1); 
@@ -22,14 +22,13 @@ for c = 1 : clsnro
         end
     end
     
-    if (size(cmx,1)>2)
+    if (size(cmx,1)<=2)
+        covmx = eye(n);
+    elseif (band>0)
         %covmx = cov_lambda(cmx,lambda);
         [covmx,lambda] = cov_shrink(cmx);
     else
-        covmx = eye(n);
-    end
-    
-    if (band==0)
+        covmx = cov(cmx);
         for i = 1:size(covmx,1)
             for j = 1:size(covmx,2)
                 if (abs(i-j)>band) 
@@ -38,6 +37,7 @@ for c = 1 : clsnro
             end
         end
     end
+    
     
 %     for i = 1:size(covmx,1)
 %         start = i - rem(i,band+1);
@@ -97,7 +97,7 @@ for c = 1 : clsnro
 %        eigenD = [eigenD; svdDlast];
 %        eigenDF = [eigenDF; svdDFlast];
         %dete = det(M);
-        eigenL = [eigenL; check];
+        %eigenL = [eigenL; check];
         
          %subplot(3,2,1:2);
          %p = plot(cmx');

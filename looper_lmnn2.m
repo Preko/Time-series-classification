@@ -35,6 +35,8 @@ plen=length(wparams);
 
 results = zeros(nlen,plen);
 
+timing = [];
+
 for i=1:nlen
     for j=1:plen
         disp(['Testing name #',num2str(i),' out of ',num2str(nlen),', param #',num2str(j),' out of ',num2str(plen),'.'])
@@ -46,6 +48,7 @@ for i=1:nlen
         tst_labels = TEST(:,1);
         TRAIN(:,1) = [];
         TEST(:,1) = [];
+        tic
         switch lower(wmethod)
             
             case {'global'}
@@ -63,5 +66,10 @@ for i=1:nlen
                 disp('Unknown weighting method!');
                 return;
         end
+        timing(i,j) = toc;
     end
 end
+
+timing
+sumtime = sum(timing)
+

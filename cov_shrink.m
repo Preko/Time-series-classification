@@ -16,10 +16,13 @@ for i=1:row
 end
 
 AW = zeros(len,len);
+%for i=1:len
+%    for j=1:len
+%        AW(i,j) = mean(mean(W(:,i,j)));
+%    end
+%end
 for i=1:len
-    for j=1:len
-        AW(i,j) = mean(mean(W(:,i,j)));
-    end
+    AW(i,:) = mean(W(:,i,:),1);
 end
 
 VarR = zeros(len,len);
@@ -61,10 +64,9 @@ Sstar = zeros(len, len);
 stdvec = std(mx);
 for i=1:len
     for j=1:len
-        Sstar(i,j) = Rstar(i,j)*sqrt(stdvec(i)*stdvec(j));
+        Sstar(i,j) = Rstar(i,j)*stdvec(i)*stdvec(j);
     end
 end
-
 
 end
 

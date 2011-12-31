@@ -32,7 +32,7 @@ function results = looper(names,wmethod,wparams,measure,k)
 % Budapest University of Technology and Economics
 % email: prekopcsak@tmit.bme.hu
 % Website: http://www.prekopcsak.com
-% May 2010; Last revision: 05-Oct-2010
+% May 2010; Last revision: 29-Dec-2011
 
 
 nlen=length(names);
@@ -41,11 +41,11 @@ plen=length(wparams);
 results = zeros(nlen,plen);
 alldist = [];
 
-global eigenL;
+%global eigenL;
 %global eigenD;
 %global eigenDF;
 
-eigenL = [];
+timing = [];
 
 for i=1:nlen
     for j=1:plen
@@ -53,16 +53,20 @@ for i=1:nlen
         TRAIN=load(char(strcat('dataset/',names(i), '/', names(i),'_TRAIN')));
         TEST=load(char(strcat('dataset/',names(i), '/', names(i),'_TEST')));
         %cov(TRAIN(:,2:size(TRAIN,2)))
+        tic
         [results(i,j),avgdist]=TSValidate(TRAIN,TEST,wmethod,wparams(j),measure,k);
+        timing(i,j) = toc;
         alldist = [alldist; avgdist];
     end
 end
 
-eigenL
+%eigenL
 %eigenD
 %eigenDF
+timing
+sumtime = sum(timing)
 
 %dlmwrite('eigens.txt',[eigenL eigenD eigenDF]);
-dlmwrite('dets.txt',eigenL);
+%dlmwrite('dets.txt',eigenL);
 
 alldist
